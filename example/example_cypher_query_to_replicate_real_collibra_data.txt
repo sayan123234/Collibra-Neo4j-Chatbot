@@ -1,0 +1,231 @@
+// Clear existing data (optional, for a clean slate)
+// MATCH (n) DETACH DELETE n;
+
+// --- Create All Nodes First ---
+
+// Create Data_Concept Nodes
+CREATE (p1:Data_Concept {
+    name: "Customer Data Platform Concept",
+    Status: "Approved",
+    Asset_Type: "Data Concept",
+    Last_Modified_On: "2025-06-20",
+    Created_On: "2024-01-15",
+    Display_Name: "CDP Master Concept",
+    Last_Modified_By: "Alice Johnson",
+    Created_By: "Bob Williams",
+    Domain: "Customer",
+    Community: "Data Governance Council"
+}),
+(p2:Data_Concept {
+    name: "Sales Reporting Concept",
+    Status: "Draft",
+    Asset_Type: "Data Concept",
+    Last_Modified_On: "2025-06-18",
+    Created_On: "2024-03-01",
+    Display_Name: "Sales Analytics Concept",
+    Last_Modified_By: "Charlie Brown",
+    Created_By: "David Lee",
+    Domain: "Sales",
+    Community: "Sales Operations"
+}),
+(p3:Data_Concept {
+    name: "Financial Compliance Concept",
+    Status: "Approved",
+    Asset_Type: "Data Concept",
+    Last_Modified_On: "2025-06-19",
+    Created_On: "2023-10-20",
+    Display_Name: "FinReg Concept",
+    Last_Modified_By: "Eve White",
+    Created_By: "Frank Green",
+    Domain: "Finance",
+    Community: "Compliance & Audit"
+}),
+
+// Create Data_Category Nodes
+(d1:Data_Category {
+    name: "Customer Data Category",
+    Status: "Approved",
+    Asset_Type: "Data Category",
+    Last_Modified_On: "2025-06-15",
+    Created_On: "2023-09-01",
+    Display_Name: "Global Customer Data",
+    Last_Modified_By: "Grace Hall",
+    Created_By: "Hannah King",
+    Domain: "Enterprise",
+    Community: "Enterprise Data Office"
+}),
+(d2:Data_Category {
+    name: "Sales Performance Category",
+    Status: "Approved",
+    Asset_Type: "Data Category",
+    Last_Modified_On: "2025-06-10",
+    Created_On: "2024-02-05",
+    Display_Name: "Sales Metrics & Reporting",
+    Last_Modified_By: "Ivy Scott",
+    Created_By: "Jack Taylor",
+    Domain: "Sales Operations",
+    Community: "Sales Operations"
+}),
+
+// Create Data_Asset Nodes
+(e1:Data_Asset {
+    name: "Customer Master Data Asset",
+    Sites: "Global",
+    Description: "Centralized asset for all customer demographic and contact information.",
+    Status: "Approved",
+    Asset_Type: "Data Asset",
+    Last_Modified_On: "2025-06-20",
+    Created_On: "2024-01-20",
+    Display_Name: "Customer Profile",
+    Last_Modified_By: "Alice Johnson",
+    Created_By: "Bob Williams",
+    Domain: "Customer Data Category",
+    Community: "Data Stewardship"
+}),
+(e2:Data_Asset {
+    name: "Order Transaction Data Asset",
+    Sites: "US, EU",
+    Description: "Records of customer purchase orders and their status.",
+    Status: "Approved",
+    Asset_Type: "Data Asset",
+    Last_Modified_On: "2025-06-17",
+    Created_On: "2024-03-10",
+    Display_Name: "Sales Order",
+    Last_Modified_By: "Charlie Brown",
+    Created_By: "David Lee",
+    Domain: "Sales Performance Category",
+    Community: "Sales Operations"
+}),
+(e3:Data_Asset {
+    name: "Financial Account Data Asset",
+    Sites: "Global",
+    Description: "Details of company financial accounts, including balance and transactions.",
+    Status: "Approved",
+    Asset_Type: "Data Asset",
+    Last_Modified_On: "2025-06-19",
+    Created_On: "2023-11-01",
+    Display_Name: "General Ledger Account",
+    Last_Modified_By: "Eve White",
+    Created_By: "Frank Green",
+    Domain: "Financial Reporting Category",
+    Community: "Finance & Accounting"
+}),
+
+// Create User Nodes
+(u1:User {name: "Alice", email: "alice.steward@example.com"}),
+(u2:User {name: "Bob", email: "bob.owner@example.com"}),
+(u3:User {name: "Carol", email: "carol.tech@example.com"}),
+
+// Create Table Nodes
+(t1:Table {name: "DW_CUSTOMER_MASTER"}),
+(t2:Table {name: "SALES_ORDERS_RAW"}),
+(t3:Table {name: "GL_ACCOUNTS_SUMMARY"}),
+
+// Create Query Nodes
+(q1:Query {name: "Active Customer Count Query"}),
+(q2:Query {name: "Monthly Sales Volume Query"}),
+
+// Create Data_Quality_Rule Nodes
+(dqr1:Data_Quality_Rule {name: "Customer Email Format Validation"}),
+(dqr2:Data_Quality_Rule {name: "Order Date Completeness Check"}),
+
+// Create CDE Nodes (Common Data Elements)
+(cde1:CDE {name: "Customer ID"}),
+(cde2:CDE {name: "Order Total Amount"}),
+
+// Create Data_Issue Nodes
+(di1:Data_Issue {name: "Duplicate Customer Records"}),
+(di2:Data_Issue {name: "Missing Order Dates"}),
+
+// Create Business_Asset Nodes
+(ba1:Business_Asset {name: "Customer Onboarding Process"}),
+(ba2:Business_Asset {name: "Monthly Sales Report Dashboard"});
+
+// --- Create Relationships ---
+
+// Data_Concept Relationships
+MATCH (concept:Data_Concept {name: "Customer Data Platform Concept"}),
+      (category:Data_Category {name: "Customer Data Category"})
+CREATE (concept)-[:CLASSIFIES]->(category),
+       (category)-[:CLASSIFIES_CONCEPT]->(concept); // Bidirectional
+
+MATCH (concept:Data_Concept {name: "Customer Data Platform Concept"}),
+      (asset:Data_Asset {name: "Customer Master Data Asset"})
+CREATE (concept)-[:HAS_ENTITY]->(asset),
+       (asset)-[:IS_CLASSIFIED_BY_CONCEPT]->(concept); // Bidirectional
+
+MATCH (concept:Data_Concept {name: "Customer Data Platform Concept"}),
+      (rule:Data_Quality_Rule {name: "Customer Email Format Validation"})
+CREATE (concept)-[:OF]->(rule),
+       (rule)-[:IS_FOR_CONCEPT]->(concept); // Bidirectional
+
+MATCH (concept:Data_Concept {name: "Customer Data Platform Concept"}),
+      (table:Table {name: "DW_CUSTOMER_MASTER"})
+CREATE (concept)-[:REPRESENTS]->(table),
+       (table)-[:IS_REPRESENTED_BY]->(concept); // Bidirectional
+
+MATCH (concept:Data_Concept {name: "Sales Reporting Concept"}),
+      (table:Table {name: "SALES_ORDERS_RAW"})
+CREATE (concept)-[:HAS_TABLE]->(table),
+       (table)-[:HAS_CONCEPT]->(concept); // Bidirectional
+
+MATCH (concept:Data_Concept {name: "Customer Data Platform Concept"}),
+      (issue:Data_Issue {name: "Duplicate Customer Records"})
+CREATE (concept)-[:IMPACTED_BY]->(issue),
+       (issue)-[:IMPACTS]->(concept); // Bidirectional
+
+// Data_Category Relationships
+MATCH (category:Data_Category {name: "Customer Data Category"}),
+      (asset:Data_Asset {name: "Customer Master Data Asset"})
+CREATE (category)-[:CONTAINS]->(asset),
+       (asset)-[:CONTAINS_ASSET]->(category); // Bidirectional
+
+MATCH (category:Data_Category {name: "Sales Performance Category"}),
+      (concept:Data_Concept {name: "Sales Reporting Concept"})
+CREATE (category)-[:IS_CLASSIFIED_BY]->(concept),
+       (concept)-[:CLASSIFIES_CATEGORY]->(category); // Bidirectional
+
+// Data_Asset Relationships
+MATCH (asset:Data_Asset {name: "Customer Master Data Asset"}),
+      (bizAsset:Business_Asset {name: "Customer Onboarding Process"})
+CREATE (asset)-[:HAS_Q_A_SET]->(bizAsset),
+       (bizAsset)-[:IS_QA_FOR_ASSET]->(asset); // Bidirectional
+
+MATCH (asset:Data_Asset {name: "Customer Master Data Asset"}),
+      (category:Data_Category {name: "Customer Data Category"})
+CREATE (asset)-[:IS_PART_OF]->(category); // This relationship is already bidirectional via CONTAINS/CONTAINS_ASSET or IS_CLASSIFIED_BY/CLASSIFIES_CONCEPT, so no new one needed here to avoid redundancy.
+
+MATCH (asset:Data_Asset {name: "Customer Master Data Asset"}),
+      (concept:Data_Concept {name: "Customer Data Platform Concept"})
+CREATE (asset)-[:IS_A_PART_OF_PRODUCT_TEAM]->(concept); // This implies a specific context, so keeping it unidirectional unless further context suggests a bidirectional need.
+
+MATCH (asset:Data_Asset {name: "Customer Master Data Asset"}),
+      (table:Table {name: "DW_CUSTOMER_MASTER"})
+CREATE (asset)-[:IS_A_PART_OF]->(table),
+       (table)-[:PART_OF_ASSET]->(asset); // Bidirectional
+
+MATCH (asset:Data_Asset {name: "Order Transaction Data Asset"}),
+      (query:Query {name: "Active Customer Count Query"})
+CREATE (asset)-[:HAS_AN_EXAMPLE_QUERY]->(query),
+       (query)-[:EXAMPLE_FOR_ASSET]->(asset); // Bidirectional
+
+MATCH (asset:Data_Asset {name: "Customer Master Data Asset"}),
+      (cde:CDE {name: "Customer ID"})
+CREATE (asset)-[:CAPTURES]->(cde),
+       (cde)-[:IS_CAPTURED_BY]->(asset); // Bidirectional
+
+// User Relationships
+MATCH (user:User {name: "Alice"}),
+      (asset:Data_Asset {name: "Customer Master Data Asset"})
+CREATE (user)-[:DATA_STEWARD]->(asset),
+       (asset)-[:HAS_DATA_STEWARD]->(user); // Bidirectional
+
+MATCH (user:User {name: "Bob"}),
+      (concept:Data_Concept {name: "Customer Data Platform Concept"})
+CREATE (user)-[:OWNER]->(concept),
+       (concept)-[:HAS_OWNER]->(user); // Bidirectional
+
+MATCH (user:User {name: "Carol"}),
+      (concept:Data_Concept {name: "Customer Data Platform Concept"})
+CREATE (user)-[:TECHNICAL_STEWARD]->(concept),
+       (concept)-[:HAS_TECHNICAL_STEWARD]->(user); // Bidirectional
