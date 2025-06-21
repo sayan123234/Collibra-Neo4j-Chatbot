@@ -87,42 +87,6 @@ with st.sidebar:
         st.rerun()
     
     st.markdown("---")
-    
-    # # Example queries
-    # st.write("### 💡 Example Queries")
-    # example_queries = [
-    #     "What is the Status for Vendor_Invoice?",
-    #     "How many entities are in the graph?",
-    #     "Show me all node labels",
-    #     "What properties does Vendor_Invoice have?"
-    # ]
-    
-    # for i, query in enumerate(example_queries):
-    #     if st.button(query, key=f"example_{i}", use_container_width=True):
-    #         # Add user message
-    #         st.session_state.messages.append({"role": "user", "content": query})
-            
-    #         # Process the query immediately
-    #         with st.spinner("Processing query..."):
-    #             result = process_query(query)
-                
-    #             if "error" in result:
-    #                 st.session_state.messages.append({
-    #                     "role": "assistant", 
-    #                     "content": f"❌ **Error:** {result['error']}"
-    #                 })
-    #             else:
-    #                 answer = result.get("answer", "No answer generated")
-    #                 st.session_state.messages.append({
-    #                     "role": "assistant",
-    #                     "content": answer,
-    #                     "details": {
-    #                         "cypher_query": result.get("cypher_query", ""),
-    #                         "query_results": result.get("query_results", [])
-    #                     }
-    #                 })
-            
-    #         st.rerun()
 
 # Main chat interface
 st.title("🔗 Sayan's Personal Assistant for Collibra")
