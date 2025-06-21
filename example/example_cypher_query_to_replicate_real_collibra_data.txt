@@ -141,91 +141,93 @@ CREATE (p1:Data_Concept {
 (ba1:Business_Asset {name: "Customer Onboarding Process"}),
 (ba2:Business_Asset {name: "Monthly Sales Report Dashboard"});
 
-// --- Create Relationships ---
+// --- Create Bidirectional Relationships ---
 
-// Data_Concept Relationships
+// Data_Concept ↔ Data_Category
 MATCH (concept:Data_Concept {name: "Customer Data Platform Concept"}),
       (category:Data_Category {name: "Customer Data Category"})
 CREATE (concept)-[:CLASSIFIES]->(category),
-       (category)-[:CLASSIFIES_CONCEPT]->(concept); // Bidirectional
+       (category)-[:CLASSIFIED_BY]->(concept);
 
+// Data_Concept ↔ Data_Asset
 MATCH (concept:Data_Concept {name: "Customer Data Platform Concept"}),
       (asset:Data_Asset {name: "Customer Master Data Asset"})
-CREATE (concept)-[:HAS_ENTITY]->(asset),
-       (asset)-[:IS_CLASSIFIED_BY_CONCEPT]->(concept); // Bidirectional
+CREATE (concept)-[:DEFINES]->(asset),
+       (asset)-[:DEFINED_BY]->(concept);
 
+// Data_Concept ↔ Data_Quality_Rule
 MATCH (concept:Data_Concept {name: "Customer Data Platform Concept"}),
       (rule:Data_Quality_Rule {name: "Customer Email Format Validation"})
-CREATE (concept)-[:OF]->(rule),
-       (rule)-[:IS_FOR_CONCEPT]->(concept); // Bidirectional
+CREATE (concept)-[:GOVERNS]->(rule),
+       (rule)-[:GOVERNED_BY]->(concept);
 
+// Data_Concept ↔ Table
 MATCH (concept:Data_Concept {name: "Customer Data Platform Concept"}),
       (table:Table {name: "DW_CUSTOMER_MASTER"})
 CREATE (concept)-[:REPRESENTS]->(table),
-       (table)-[:IS_REPRESENTED_BY]->(concept); // Bidirectional
+       (table)-[:REPRESENTED_BY]->(concept);
 
 MATCH (concept:Data_Concept {name: "Sales Reporting Concept"}),
       (table:Table {name: "SALES_ORDERS_RAW"})
-CREATE (concept)-[:HAS_TABLE]->(table),
-       (table)-[:HAS_CONCEPT]->(concept); // Bidirectional
+CREATE (concept)-[:IMPLEMENTS]->(table),
+       (table)-[:IMPLEMENTS_CONCEPT]->(concept);
 
-MATCH (concept:Data_Concept {name: "Customer Data Platform Concept"}),
-      (issue:Data_Issue {name: "Duplicate Customer Records"})
-CREATE (concept)-[:IMPACTED_BY]->(issue),
-       (issue)-[:IMPACTS]->(concept); // Bidirectional
+// Data_Issue ↔ Data_Concept
+MATCH (issue:Data_Issue {name: "Duplicate Customer Records"}),
+      (concept:Data_Concept {name: "Customer Data Platform Concept"})
+CREATE (issue)-[:IMPACTS]->(concept),
+       (concept)-[:IMPACTED_BY]->(issue);
 
-// Data_Category Relationships
+// Data_Category ↔ Data_Asset
 MATCH (category:Data_Category {name: "Customer Data Category"}),
       (asset:Data_Asset {name: "Customer Master Data Asset"})
 CREATE (category)-[:CONTAINS]->(asset),
-       (asset)-[:CONTAINS_ASSET]->(category); // Bidirectional
+       (asset)-[:BELONGS_TO]->(category);
 
+// Data_Category ↔ Data_Concept
 MATCH (category:Data_Category {name: "Sales Performance Category"}),
       (concept:Data_Concept {name: "Sales Reporting Concept"})
-CREATE (category)-[:IS_CLASSIFIED_BY]->(concept),
-       (concept)-[:CLASSIFIES_CATEGORY]->(category); // Bidirectional
+CREATE (category)-[:GROUPS]->(concept),
+       (concept)-[:GROUPED_BY]->(category);
 
-// Data_Asset Relationships
+// Data_Asset ↔ Business_Asset
 MATCH (asset:Data_Asset {name: "Customer Master Data Asset"}),
       (bizAsset:Business_Asset {name: "Customer Onboarding Process"})
-CREATE (asset)-[:HAS_Q_A_SET]->(bizAsset),
-       (bizAsset)-[:IS_QA_FOR_ASSET]->(asset); // Bidirectional
+CREATE (asset)-[:SUPPORTS]->(bizAsset),
+       (bizAsset)-[:SUPPORTED_BY]->(asset);
 
-MATCH (asset:Data_Asset {name: "Customer Master Data Asset"}),
-      (category:Data_Category {name: "Customer Data Category"})
-CREATE (asset)-[:IS_PART_OF]->(category); // This relationship is already bidirectional via CONTAINS/CONTAINS_ASSET or IS_CLASSIFIED_BY/CLASSIFIES_CONCEPT, so no new one needed here to avoid redundancy.
-
-MATCH (asset:Data_Asset {name: "Customer Master Data Asset"}),
-      (concept:Data_Concept {name: "Customer Data Platform Concept"})
-CREATE (asset)-[:IS_A_PART_OF_PRODUCT_TEAM]->(concept); // This implies a specific context, so keeping it unidirectional unless further context suggests a bidirectional need.
-
+// Data_Asset ↔ Table
 MATCH (asset:Data_Asset {name: "Customer Master Data Asset"}),
       (table:Table {name: "DW_CUSTOMER_MASTER"})
-CREATE (asset)-[:IS_A_PART_OF]->(table),
-       (table)-[:PART_OF_ASSET]->(asset); // Bidirectional
+CREATE (asset)-[:MATERIALIZED_IN]->(table),
+       (table)-[:MATERIALIZES]->(asset);
 
+// Data_Asset ↔ Query
 MATCH (asset:Data_Asset {name: "Order Transaction Data Asset"}),
       (query:Query {name: "Active Customer Count Query"})
-CREATE (asset)-[:HAS_AN_EXAMPLE_QUERY]->(query),
-       (query)-[:EXAMPLE_FOR_ASSET]->(asset); // Bidirectional
+CREATE (asset)-[:HAS_EXAMPLE_QUERY]->(query),
+       (query)-[:EXAMPLE_FOR]->(asset);
 
+// Data_Asset ↔ CDE
 MATCH (asset:Data_Asset {name: "Customer Master Data Asset"}),
       (cde:CDE {name: "Customer ID"})
 CREATE (asset)-[:CAPTURES]->(cde),
-       (cde)-[:IS_CAPTURED_BY]->(asset); // Bidirectional
+       (cde)-[:CAPTURED_BY]->(asset);
 
-// User Relationships
+// User ↔ Data_Asset (Stewardship)
 MATCH (user:User {name: "Alice"}),
       (asset:Data_Asset {name: "Customer Master Data Asset"})
-CREATE (user)-[:DATA_STEWARD]->(asset),
-       (asset)-[:HAS_DATA_STEWARD]->(user); // Bidirectional
+CREATE (user)-[:STEWARDS]->(asset),
+       (asset)-[:STEWARDED_BY]->(user);
 
+// User ↔ Data_Concept (Ownership)
 MATCH (user:User {name: "Bob"}),
       (concept:Data_Concept {name: "Customer Data Platform Concept"})
-CREATE (user)-[:OWNER]->(concept),
-       (concept)-[:HAS_OWNER]->(user); // Bidirectional
+CREATE (user)-[:OWNS]->(concept),
+       (concept)-[:OWNED_BY]->(user);
 
+// User ↔ Data_Concept (Technical Stewardship)
 MATCH (user:User {name: "Carol"}),
       (concept:Data_Concept {name: "Customer Data Platform Concept"})
-CREATE (user)-[:TECHNICAL_STEWARD]->(concept),
-       (concept)-[:HAS_TECHNICAL_STEWARD]->(user); // Bidirectional
+CREATE (user)-[:TECHNICALLY_STEWARDS]->(concept),
+       (concept)-[:TECHNICALLY_STEWARDED_BY]->(user);
