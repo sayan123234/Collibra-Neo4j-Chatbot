@@ -154,7 +154,7 @@ for i, message in enumerate(st.session_state.messages):
                         st.json(message["details"]["query_results"])
 
 # Chat input
-if prompt := st.chat_input("Ask me anything about your Neo4j graph..."):
+if prompt := st.chat_input("Ask me anything about your DGC instance's metadata"):
     if not st.session_state.query_system:
         st.error("Please initialize the connection first!")
     else:
