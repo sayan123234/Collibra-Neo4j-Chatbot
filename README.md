@@ -103,4 +103,4 @@ The application will open in your default web browser.
 2.  In the sidebar, click the **🔌 Initialize Connection** button to connect to Neo4j and Groq.
 3.  Wait for the "✅ Connected" status to appear.
 4.  (Optional) Click **📋 View Graph Schema** to inspect the database schema.
-5.  Start asking questions about your Collibra graph in the chat input at the bottom of the page (e.g., "What is the Status for Vendor_Invoice?").
+5.  Start asking questions about your Collibra graph in the chat input at the bottom of the page.
