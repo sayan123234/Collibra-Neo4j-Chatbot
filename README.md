@@ -80,9 +80,11 @@ Create a file named `.env` in the root directory of the project. This file will 
 NEO4J_URI="bolt://localhost:7687"
 NEO4J_USERNAME="neo4j"
 NEO4J_PASSWORD="your_neo4j_password"
+NEO4J_DATABASE="your_neo4j_database_name"
 
 # Groq API Key
 GROQ_API_KEY="your_groq_api_key"
+GROQ_MODEL_NAME="your_groq_model_name"
 ```
 
 **Note:** The `src/nl_to_cypher.py` file must be updated to load these environment variables (e.g., using `load_dotenv()` from the `dotenv` package).
