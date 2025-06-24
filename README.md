@@ -1,108 +1,169 @@
-# Collibra Neo4j Chatbot
+# Collibra Data Governance Assistant
 
-This project is a Streamlit-based chatbot designed to interact with a Collibra knowledge graph stored in a Neo4j database. It leverages Large Language Models (LLMs) via the Groq API and LangChain to translate natural language questions into Cypher queries, execute them against the graph, and return user-friendly answers.
+An AI-powered natural language interface for querying Collibra metadata stored in Neo4j. This Streamlit application converts natural language questions into Cypher queries using LangChain and Groq LLM, providing an intuitive way to explore your data governance landscape.
 
- <!-- It's recommended to add a screenshot of your app here -->
+## 🎯 What This Project Does
 
-## 🚀 Features
+This application serves as an intelligent bridge between users and their Collibra data governance metadata by:
 
-- **Natural Language Interface:** Ask questions about your Collibra metadata in plain English.
-- **Dynamic Cypher Generation:** Automatically converts your questions into executable Cypher queries.
-- **Interactive Chat:** A familiar chat interface for a seamless user experience, powered by Streamlit.
-- **Query Transparency:** View the generated Cypher query and the raw JSON results for each answer.
-- **Schema Inspector:** Easily view the Neo4j graph schema directly from the application's sidebar.
-- **Connection Management:** Simple controls to initialize the connection to backend services and clear the chat history.
+- **Converting natural language to Cypher queries** using advanced LLM technology
+- **Executing queries against Neo4j** containing Collibra metadata
+- **Providing conversational responses** with technical details and performance metrics
+- **Offering real-time schema exploration** and database statistics
+- **Caching queries** for improved performance and user experience
 
-## 🛠️ Tech Stack
+## 🚀 Key Features
 
-- **Frontend:** [Streamlit](https://streamlit.io/)
-- **Backend/LLM Orchestration:** [LangChain](https://www.langchain.com/)
-- **LLM Provider:** [Groq](https://groq.com/)
-- **Database:** [Neo4j](https://neo4j.com/)
+### Core Functionality
+- **Natural Language Processing**: Ask questions in plain English about your Collibra assets, stewardship, domains, and relationships
+- **Intelligent Query Generation**: Advanced prompt engineering for accurate Cypher query creation
+- **Real-time Execution**: Direct query execution against Neo4j with performance monitoring
+- **Smart Response Formatting**: Context-aware answer generation with proper data governance terminology
+
+### User Experience
+- **Interactive Chat Interface**: Streamlit-powered conversational UI with message history
+- **Query Transparency**: View generated Cypher queries, execution results, and validation status
+- **Performance Metrics**: Response times, success rates, and query statistics
+- **Sample Questions**: Quick-start buttons for common data governance queries
+
+### Technical Features
+- **Connection Management**: Robust connection handling with detailed diagnostics
+- **Schema Caching**: Optimized schema retrieval with refresh capabilities
+- **Error Handling**: Comprehensive error reporting and recovery mechanisms
+- **Query Validation**: Syntax checking and optimization for generated queries
+
+## 🛠️ Technology Stack
+
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| **Frontend** | [Streamlit](https://streamlit.io/) | Interactive web interface |
+| **LLM Orchestration** | [LangChain](https://www.langchain.com/) | AI workflow management |
+| **Language Model** | [Groq](https://groq.com/) | Fast LLM inference |
+| **Database** | [Neo4j](https://neo4j.com/) | Graph database for Collibra metadata |
+| **Configuration** | Python-dotenv | Environment variable management |
 
 ## 📋 Prerequisites
 
-Before you begin, ensure you have the following:
+- **Python 3.8+** with pip package manager
+- **Neo4j Database** containing Collibra metadata (local or cloud instance)
+- **Groq API Key** for LLM access
+- **Environment Variables** configured for database and API connections
 
-- Python 3.8+
-- Access to a running Neo4j instance containing your Collibra data.
-- A Groq API Key.
+## ⚙️ Installation & Setup
 
-## ⚙️ Setup and Installation
-
-Follow these steps to get the application running locally.
-
-### 1. Clone the Repository
-
+### 1. Clone and Navigate
 ```bash
-git clone <your-repository-url>
-cd Collibra-Neo4j-Chatbot
+git clone <repository-url>
+cd collibra-assistant
 ```
 
-### 2. Create a Virtual Environment
-
-It's highly recommended to use a virtual environment to manage project dependencies.
-
+### 2. Create Virtual Environment
 ```bash
-# For Windows
 python -m venv venv
-.\venv\Scripts\activate
-
-# For macOS/Linux
-python3 -m venv venv
+# Windows
+venv\Scripts\activate
+# macOS/Linux
 source venv/bin/activate
 ```
 
 ### 3. Install Dependencies
-
-Create a `requirements.txt` file in the root of the project with the following content:
-
-```txt
-streamlit
-langchain
-langchain-groq
-langchain-neo4j
-python-dotenv
-```
-
-Then, install the packages:
-
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 4. Configure Environment Variables
-
-Create a file named `.env` in the root directory of the project. This file will store your secret keys and connection details. Add the following variables, replacing the placeholder values with your actual credentials.
+Create a `.env` file in the project root:
 
 ```env
-# Neo4j Credentials
-NEO4J_URI="bolt://localhost:7687"
-NEO4J_USERNAME="neo4j"
-NEO4J_PASSWORD="your_neo4j_password"
-NEO4J_DATABASE="your_neo4j_database_name"
+# Neo4j Configuration
+NEO4J_URL=bolt://localhost:7687
+NEO4J_USERNAME=neo4j
+NEO4J_PASSWORD=your_password
+NEO4J_DATABASE=neo4j
 
-# Groq API Key
-GROQ_API_KEY="your_groq_api_key"
-GROQ_MODEL_NAME="your_groq_model_name"
+# Groq Configuration
+GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL_NAME=llama3-70b-8192
+
+# Optional Performance Settings
+MAX_QUERY_RESULTS=100
+QUERY_TIMEOUT=30
+
+# Optional UI Customization
+APP_TITLE=Collibra Data Governance Assistant
+APP_ICON=🔗
+APP_VERSION=v2.0
+SIDEBAR_ASSETS_LABEL=Assets
+SIDEBAR_ASSET_TYPES_LABEL=Asset Types
 ```
 
-**Note:** The `src/nl_to_cypher.py` file must be updated to load these environment variables (e.g., using `load_dotenv()` from the `dotenv` package).
-
-## ▶️ Running the Application
-
-Once the setup is complete, you can run the Streamlit application with the following command:
+## 🚀 Running the Application
 
 ```bash
 streamlit run app.py
 ```
 
-The application will open in your default web browser.
+The application will open in your browser at `http://localhost:8501`
 
-## 📖 Usage
+## 📖 Usage Guide
 
-1.  Open the application in your browser.
-2.  In the sidebar, click the **🔌 Initialize Connection** button to connect to Neo4j and Groq.
-3.  Wait for the "✅ Connected" status to appear.
-4.  (Optional) Click **📋 View Graph Schema** to inspect the database schema.
-5.  Start asking questions about your Collibra graph in the chat input at the bottom of the page.
+### Getting Started
+1. **Initialize Connection**: Click "🔌 Initialize Connection" in the sidebar
+2. **Verify Status**: Wait for "✅ Connected" confirmation
+3. **Explore Database**: Review database statistics and schema information
+4. **Start Querying**: Use sample questions or type your own
+
+### Sample Questions
+- "How many assets are in the database?"
+- "Who owns the Customer table?"
+- "Show me all data concepts in the Finance domain"
+- "List technical stewards for database assets"
+- "What are the different asset types available?"
+
+### Advanced Features
+- **Schema Viewer**: Inspect node labels and relationship types
+- **Query Cache**: Automatic caching for repeated questions
+- **Performance Monitoring**: Track response times and success rates
+- **Technical Details**: View generated Cypher queries and raw results
+
+## 🏗️ Project Structure
+
+```
+├── app.py                 # Main Streamlit application
+├── requirements.txt       # Python dependencies
+├── README.md             # Project documentation
+├── .env                  # Environment variables (create this)
+├── src/
+│   ├── __init__.py       # Package initialization
+│   ├── config.py         # Configuration management
+│   ├── graph_service.py  # Neo4j and LLM service layer
+│   ├── nl_to_cypher.py   # Natural language to Cypher conversion
+│   └── prompts.py        # LLM prompt templates
+└── example/
+    └── example_cypher_query_to_replicate_real_collibra_data.txt
+```
+
+## 🔧 Configuration Options
+
+The application supports various configuration options through environment variables:
+
+### Performance Settings
+- `MAX_QUERY_RESULTS`: Limit query result size (default: 100)
+- `QUERY_TIMEOUT`: Database query timeout in seconds (default: 30)
+- `GROQ_MODEL_NAME`: Groq model selection (default: llama3-70b-8192)
+
+### UI Customization
+- `APP_TITLE`: Application title (default: "Collibra Data Governance Assistant")
+- `APP_ICON`: Application icon (default: "🔗")
+- `APP_VERSION`: Version display (default: "v2.0")
+- `SIDEBAR_ASSETS_LABEL`: Label for assets count (default: "Assets")
+- `SIDEBAR_ASSET_TYPES_LABEL`: Label for asset types count (default: "Asset Types")
+
+## 🎯 Use Cases
+
+This application is ideal for:
+
+- **Data Governance Teams**: Quick exploration of metadata relationships
+- **Business Users**: Self-service access to data lineage and ownership information
+- **Data Stewards**: Monitoring and managing data assets and responsibilities
+- **Compliance Teams**: Auditing data governance policies and implementations
