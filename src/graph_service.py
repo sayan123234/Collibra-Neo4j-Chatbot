@@ -101,6 +101,34 @@ class GraphService:
         except Exception as e:
             logger.error(f"Connection test failed: {e}")
             return False
+    def execute_cypher_paginated(self, cypher_query: str, page_size: int = 50, page: int = 1) -> Dict[str, Any]:
+        """Execute Cypher query with pagination"""
+        offset = (page - 1) * page_size
+        
+        # Add pagination to query
+        if "LIMIT" not in cypher_query.upper():
+            paginated_query = f"{cypher_query} SKIP {offset} LIMIT {page_size}"
+        else:
+            # Replace existing LIMIT with pagination
+            import re
+            paginated_query = re.sub(r'LIMIT\s+\d+', f'SKIP {offset} LIMIT {page_size}', cypher_query, flags=re.IGNORECASE)
+        
+        # Get total count
+        count_query = f"MATCH {cypher_query.split('RETURN')[0].split('MATCH')[1]} RETURN count(*) as total"
+        
+        results = self.graph.query(paginated_query)
+        try:
+            total_count = self.graph.query(count_query)[0]['total']
+        except:
+            total_count = len(results)
+        
+        return {
+            "results": results,
+            "page": page,
+            "page_size": page_size,
+            "total_count": total_count,
+            "total_pages": (total_count + page_size - 1) // page_size
+        }
     
     def get_database_info(self) -> Dict[str, Any]:
         """Get comprehensive database information"""
