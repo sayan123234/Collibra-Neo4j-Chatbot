@@ -21,6 +21,12 @@ class Settings(BaseSettings):
         default=True
     )  # Set to False in production to hide Cypher queries
 
+    # Vector Search / Embedding Configuration
+    EMBEDDING_MODEL: str = Field(default="all-MiniLM-L6-v2")
+    VECTOR_INDEX_NAME: str = Field(default="asset_embeddings")
+    VECTOR_DIMENSION: int = Field(default=384)
+    VECTOR_TOP_K: int = Field(default=5)
+
     # API Configuration
     API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "Collibra Neo4j Chatbot"

@@ -36,7 +36,7 @@ function App() {
       <div className={`w-16 border-r flex flex-col items-center py-6 gap-6 z-20 shrink-0 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
         }`}>
         <div className="w-10 h-10 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold shrink-0">
-          CA
+          CKG
         </div>
 
         <div className="flex flex-col gap-4 w-full flex-1">

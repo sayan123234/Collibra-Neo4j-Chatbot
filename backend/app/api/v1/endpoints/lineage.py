@@ -31,6 +31,12 @@ def get_lineage(limit: int = 100):
         nodes = {}
         links = []
 
+        # Properties to exclude from frontend (large/internal)
+        EXCLUDED_PROPS = {"embedding"}
+
+        def filter_props(props: dict) -> dict:
+            return {k: v for k, v in props.items() if k not in EXCLUDED_PROPS}
+
         for record in results:
             # Process source node
             n_id = record["n_id"]
@@ -46,7 +52,7 @@ def get_lineage(limit: int = 100):
                     "id": n_id,
                     "label": n_label,
                     "group": n_group,
-                    "properties": n_props,
+                    "properties": filter_props(n_props),
                 }
 
             # Process target node
@@ -62,7 +68,7 @@ def get_lineage(limit: int = 100):
                     "id": m_id,
                     "label": m_label,
                     "group": m_group,
-                    "properties": m_props,
+                    "properties": filter_props(m_props),
                 }
 
             # Process relationship

@@ -1,128 +1,183 @@
 # Collibra Data Governance Assistant
 
-An AI-powered natural language interface for querying Collibra metadata stored in Neo4j. This application converts natural language questions into Cypher queries using LangChain and Groq LLM, providing an intuitive way to explore your data governance landscape.
+An AI-powered natural language interface for querying Collibra metadata stored in Neo4j. This application uses **Hybrid RAG** (Retrieval-Augmented Generation) combining vector embeddings with Cypher queries for intelligent, context-aware responses.
 
-> **Note:** This project has been refactored into a modern decoupled architecture with a **FastAPI** backend and a **React + Tailwind** frontend.
+> **Architecture**: FastAPI backend + React/Tailwind frontend with Neo4j vector search.
 
-## 🎯 What This Project Does
+## 🏛️ Architecture
 
-This application serves as an intelligent bridge between users and their Collibra data governance metadata by:
-
-- **Converting natural language to Cypher queries** using advanced LLM technology.
-- **Visualizing Data Lineage** with an interactive, hierarchical graph view.
-- **Executing queries against Neo4j** containing Collibra metadata.
-- **Providing conversational responses** with comprehensive conversation history tracking.
+```text
+┌─────────────────────────────────────────────────────────────────┐
+│                         User Interface                          │
+│                    React + Tailwind + React Flow                │
+└─────────────────────────────┬───────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                       FastAPI Backend                           │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
+│  │   Router    │  │  Embedding  │  │      Chat Service       │  │
+│  │  (Classify) │  │   Service   │  │   (Hybrid RAG Logic)    │  │
+│  └──────┬──────┘  └──────┬──────┘  └───────────┬─────────────┘  │
+│         │                │                      │                │
+│         ▼                ▼                      ▼                │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │                    Graph Service                          │   │
+│  │         Neo4j Connection + Vector Search                  │   │
+│  └──────────────────────────────────────────────────────────┘   │
+└─────────────────────────────┬───────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                         Neo4j Database                          │
+│           Collibra Metadata + Vector Embeddings                 │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ## 🚀 Key Features
 
-### Core Capabilities
+### Hybrid RAG (Semantic + Structured)
 
-- **Natural Language Processing**: Ask questions in plain English about your Collibra assets, stewardship, domains, and relationships.
-- **Interactive Lineage Graph**: Explore data dependencies with a structured **React Flow** visualization (Left-to-Right layout).
-- **Intelligent Query Generation**: Advanced prompt engineering for accurate Cypher query creation.
-- **Node Details Side Panel**: Click on any node in the lineage view to see full properties and metadata.
+- **Vector Search**: Semantic similarity using sentence-transformers embeddings
+- **Text-to-Cypher**: Structured queries for factual/relational questions
+- **Combined Context**: LLM uses both sources for richer answers
 
-### Enhanced User Experience
+### Interactive Traceability Graph
 
-- **Responsive Chat Interface**: Modern React-powered UI with optimistic updates.
-- **Dark Mode Support**: Toggle between Light and Dark themes (auto-detects system preference).
-- **Query Transparency**: View generated Cypher queries and execution results used by the AI.
-- **Performance Metrics**: Response times and result counts.
+- **Collibra-style visualization** with React Flow
+- **Path highlighting** on hover/click
+- **MiniMap navigation** and legends
+- **Details panel** with full node metadata
+
+### Smart Chat
+
+- **Intelligent routing**: Distinguishes greetings from database queries
+- **Conversation history**: Context-aware follow-up questions
+- **Production mode**: Hide Cypher queries from responses
 
 ## 🛠️ Technology Stack
 
-| Component | Technology | Purpose |
-| :-- | :-- | :-- |
-| **Frontend** | [React](https://react.dev/) + [Tailwind CSS v4](https://tailwindcss.com/) | Modern, responsive web interface |
-| **Visualization** | [React Flow](https://reactflow.dev/) + Dagre | Hierarchical graph layout and interaction |
-| **Backend** | [FastAPI](https://fastapi.tiangolo.com/) | High-performance REST API |
-| **LLM Orchestration** | [LangChain](https://www.langchain.com/) | AI workflow management |
-| **Language Model** | [Groq](https://groq.com/) | Fast LLM inference (`llama-3.3-70b-versatile`) |
-| **Database** | [Neo4j](https://neo4j.com/) | Graph database for Collibra metadata |
+| Component | Technology |
+|:--|:--|
+| **Frontend** | React 18 + Tailwind CSS v4 + React Flow |
+| **Backend** | FastAPI + Pydantic |
+| **LLM** | Groq (`llama-3.3-70b-versatile`) |
+| **Embeddings** | sentence-transformers (`all-MiniLM-L6-v2`) |
+| **Database** | Neo4j 5.x with native vector indexes |
 
-## 📋 Prerequisites
+## ⚙️ Installation
 
-- **Python 3.10+** (Backend)
-- **Node.js 20+** (Frontend)
-- **Neo4j Database** containing Collibra metadata.
-- **Groq API Key** for LLM access.
-
-## ⚙️ Installation & Setup
-
-### 1. Backend Setup (FastAPI)
-
-The backend handles the connection to Neo4j and Groq (LLM).
+### 1. Clone & Install Dependencies
 
 ```powershell
-# In the root directory
-# Install dependencies (using uv)
+# Install Python dependencies
 uv sync
 
-# Run the server
-uv run uvicorn backend.app.main:app --reload
+# Install Frontend dependencies
+cd frontend && npm install && cd ..
 ```
 
-*The backend will start at `http://localhost:8000`*
+### 2. Configure Environment
 
-### 2. Frontend Setup (React)
-
-The frontend provides the chat and visualization interface.
-
-```powershell
-# Open a new terminal
-cd frontend
-
-# Install dependencies
-npm install
-
-# Start the dev server
-npm run dev
-```
-
-*The frontend will start at `http://localhost:5173`*
-
-## 🔧 Configuration
-
-Ensure your `.env` file in the project root contains the necessary credentials:
+Create `.env` in the project root:
 
 ```env
-# Neo4j Configuration
+# Neo4j
 NEO4J_URL=bolt://localhost:7687
 NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=your_password
 NEO4J_DATABASE=neo4j
 
-# Groq Configuration
+# Groq LLM
 GROQ_API_KEY=your_groq_api_key
 GROQ_MODEL_NAME=llama-3.3-70b-versatile
 
-# Performance Settings
+# Application
+DEBUG_MODE=true          # Set false in production to hide Cypher
 MAX_QUERY_RESULTS=100
 QUERY_TIMEOUT=30
+
+# Vector Search
+EMBEDDING_MODEL=all-MiniLM-L6-v2
+VECTOR_INDEX_NAME=asset_embeddings
+VECTOR_DIMENSION=384
+VECTOR_TOP_K=5
+```
+
+### 3. Setup Vector Index (One-time)
+
+Generate embeddings for all nodes in Neo4j:
+
+```powershell
+uv run python -m backend.scripts.setup_vector_index
+```
+
+### 4. Run the Application
+
+```powershell
+# Terminal 1: Backend
+uv run uvicorn backend.app.main:app --reload
+
+# Terminal 2: Frontend
+cd frontend && npm run dev
+```
+
+Open `http://localhost:5173`
+
+## 📡 API Endpoints
+
+| Endpoint | Method | Description |
+|:--|:--|:--|
+| `/api/v1/chat` | POST | Send a question, get Hybrid RAG response |
+| `/api/v1/lineage` | GET | Get all nodes/edges for graph visualization |
+| `/api/v1/schema` | GET | Get Neo4j graph schema |
+| `/api/v1/admin/reindex` | POST | Trigger embedding re-indexing |
+| `/api/v1/admin/index-status` | GET | Check vector index coverage |
+| `/health` | GET | Health check |
+
+### Incremental Indexing
+
+When new data is added to Neo4j:
+
+```powershell
+# CLI (only new nodes)
+uv run python -m backend.scripts.setup_vector_index --incremental
+
+# Or via API
+curl -X POST http://localhost:8000/api/v1/admin/reindex \
+  -H "Content-Type: application/json" \
+  -d '{"incremental": true}'
 ```
 
 ## 🏗️ Project Structure
 
-```text
-├── backend/               # FastAPI Backend
+```
+├── backend/
 │   ├── app/
-│   │   ├── api/          # API Endpoints (/chat, /lineage)
-│   │   ├── core/         # Configuration & Settings
-│   │   └── services/     # Logic (GraphService, ChatService)
-├── frontend/             # React Frontend
-│   ├── src/
-│   │   ├── components/   # Chat, LineageView, CustomNode
-│   │   └── api/          # API Client
-├── .env                  # Environment Variables
-└── pyproject.toml        # Python Dependencies
+│   │   ├── api/v1/endpoints/   # chat, lineage, admin
+│   │   ├── core/               # config settings
+│   │   └── services/           # graph, chat, embedding
+│   └── scripts/                # setup_vector_index.py
+├── frontend/
+│   └── src/
+│       ├── components/         # ChatInterface, LineageView
+│       └── api/                # client.js
+├── .env
+├── pyproject.toml
+└── README.md
 ```
 
-## 📖 Usage Guide
+## 📖 Usage Examples
 
-1. **Start Components**: Run both Backend and Frontend.
-2. **Access UI**: Open `http://localhost:5173`.
-3. **Chat**: Ask questions like "Show me the lineage of Customer Data."
-4. **Lineage View**: Switch to the **Lineage Tab** (Share Icon) to visualize relationships.
-    - **Click Nodes**: View details in the side panel.
-    - **Auto Layout**: Use the wand icon to re-organize the graph.
-5. **Dark Mode**: Use the moon/sun icon in the sidebar to toggle themes.
+| Query Type | Example |
+|:--|:--|
+| **Factual** | "How many tables are in the Enterprise domain?" |
+| **Semantic** | "Find assets related to GDPR compliance" |
+| **Relational** | "Who owns the Customer Data Platform?" |
+| **Follow-up** | "What else does Bob own?" |
+
+## 🔒 Production Deployment
+
+1. Set `DEBUG_MODE=false` in `.env` to hide Cypher queries
+2. Run vector indexing: `uv run python -m backend.scripts.setup_vector_index`
+3. Use a production ASGI server: `uvicorn backend.app.main:app --host 0.0.0.0`
