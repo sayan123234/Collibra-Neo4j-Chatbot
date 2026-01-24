@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import Dict, Any, List, Optional
 from backend.app.services.chat_service import chat_service
 from backend.app.services.graph_service import graph_service
+from backend.app.core.config import settings
 
 router = APIRouter()
 
@@ -34,10 +35,11 @@ async def chat(request: ChatRequest):
             error=result["error"],
         )
 
+    # Only include debug info (cypher_query, results) when DEBUG_MODE is enabled
     return ChatResponse(
         answer=result["answer"],
-        cypher_query=result.get("cypher_query"),
-        results=result.get("results"),
+        cypher_query=result.get("cypher_query") if settings.DEBUG_MODE else None,
+        results=result.get("results") if settings.DEBUG_MODE else None,
     )
 
 

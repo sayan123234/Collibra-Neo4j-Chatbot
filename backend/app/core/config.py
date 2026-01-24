@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     # Application Configuration
     MAX_QUERY_RESULTS: int = Field(default=100)
     QUERY_TIMEOUT: int = Field(default=30)
+    DEBUG_MODE: bool = Field(
+        default=True
+    )  # Set to False in production to hide Cypher queries
 
     # API Configuration
     API_V1_STR: str = "/api/v1"
