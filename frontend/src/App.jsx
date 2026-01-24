@@ -88,11 +88,14 @@ function App() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-full overflow-hidden relative">
-        {activeTab === 'chat' ? (
+        <div className={`flex-1 flex flex-col h-full transition-opacity duration-200 ${activeTab === 'chat' ? 'opacity-100 relative' : 'opacity-0 pointer-events-none absolute inset-0'
+          }`}>
           <ChatInterface />
-        ) : (
+        </div>
+        <div className={`flex-1 flex flex-col h-full transition-opacity duration-200 ${activeTab === 'lineage' ? 'opacity-100 relative' : 'opacity-0 pointer-events-none absolute inset-0'
+          }`}>
           <LineageView />
-        )}
+        </div>
       </div>
     </div>
   );
